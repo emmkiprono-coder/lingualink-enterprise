@@ -11,7 +11,7 @@ var FACS=[{n:"Christ Medical",s:"Illinois"},{n:"Illinois Masonic",s:"Illinois"},
 var DLANGS=[{n:"Spanish",p:42},{n:"Vietnamese",p:8},{n:"Chinese",p:7},{n:"Arabic",p:7},{n:"Korean",p:5},{n:"Burmese",p:4},{n:"Nepali",p:4},{n:"Hmong",p:4},{n:"Somali",p:3},{n:"Russian",p:3},{n:"Swahili",p:2},{n:"Karen",p:2},{n:"Amharic",p:2},{n:"French",p:2},{n:"Hindi",p:2}];
 var RELAY=[{id:1,step:"Confirm no direct interpreter",crit:true,desc:"Verify all channels.",no:"Do not initiate."},{id:2,step:"Identify bridge language",crit:true,desc:"Confirm patient speaks bridge.",no:"Use vendor OPI."},{id:3,step:"Verify interpreter quals",crit:true,desc:"Qualified BOTH languages.",no:"Request from vendor."},{id:4,step:"Assess complexity",crit:true,desc:"PROHIBITED: consent, psych, EOL.",no:"Get direct interpreter."},{id:5,step:"Patient disclosure",crit:true,desc:"Standardized script. Document.",no:"Do not proceed."},{id:6,step:"Brief interpreters",crit:false,desc:"Context, turn-taking.",no:"Abbreviated."},{id:7,step:"Brief clinician",crit:false,desc:"Explain relay process.",no:"Key points."},{id:8,step:"Activate documentation",crit:true,desc:"Open template BEFORE encounter.",no:"Complete within 4hrs."}];
 var RESC=[{t:"Patient confused",a:"PAUSE. Teach-back. Terminate if failed.",s:"high"},{t:"Interpreter difficulty",a:"PAUSE. Simplify. Terminate if persistent.",s:"high"},{t:"Cannot relay terminology",a:"Visual aids. Terminate if critical.",s:"high"},{t:"Patient requests different",a:"Honor immediately.",s:"med"},{t:"Exceeds 45 minutes",a:"Break. Assess fatigue.",s:"med"}];
-var DC={arabic:{name:"Arabic Continuum",risk:"HIGH",scenario:"Misdiagnosis from dialect mismatch. $1.85M-$8.3M.",warn:"Levantine interpreter CANNOT serve Maghrebi patient.",vars:[{n:"MSA",r:"Formal",i:"Understood educated only.",rk:"med"},{n:"Levantine",r:"Syria/Lebanon",i:"75% Egyptian, 35% Maghrebi",rk:"low"},{n:"Egyptian",r:"Egypt",i:"Most widely understood.",rk:"low"},{n:"Gulf",r:"Saudi/UAE",i:"55% Levantine, 30% Maghrebi",rk:"med"},{n:"Maghrebi",r:"Morocco/Algeria",i:"35% Levantine. French better.",rk:"crit"},{n:"Sudanese",r:"Sudan",i:"60% Egyptian",rk:"med"}]},chinKaren:{name:"Chin-Karen Complex",risk:"HIGH",scenario:"OB relay failure. $7M-$27M.",warn:"Chin is NOT one language. Karen is separate.",vars:[{n:"Hakha Chin",r:"Hakha",i:"60% Falam, 25% Tedim",rk:"med"},{n:"Falam Chin",r:"Falam",i:"60% Hakha",rk:"med"},{n:"Tedim Chin",r:"Tedim",i:"25% Hakha. DISTINCT.",rk:"crit"},{n:"S'gaw Karen",r:"Karen State",i:"<10% Chin.",rk:"high"},{n:"Pwo Karen",r:"Karen State",i:"65% S'gaw.",rk:"high"},{n:"Burmese Bridge",r:"Myanmar",i:"Proficiency varies.",rk:"med"}]},southAsian:{name:"South Asian Complex",risk:"MED-HIGH",scenario:"Script mismatch causing med errors.",warn:"Hindi cannot serve Tamil. Match script.",vars:[{n:"Hindi",r:"India",i:"90% Urdu spoken. Devanagari.",rk:"low"},{n:"Urdu",r:"Pakistan",i:"90% Hindi spoken. Nastaliq.",rk:"low"},{n:"Punjabi",r:"India/Pak",i:"60% Hindi.",rk:"med"},{n:"Bengali",r:"Bangladesh",i:"30% Hindi.",rk:"high"},{n:"Tamil",r:"Tamil Nadu",i:"<10% Hindi. DRAVIDIAN.",rk:"crit"},{n:"Nepali",r:"Nepal",i:"55% Hindi.",rk:"med"}]}};
+var DC={arabic:{name:"Arabic Continuum",risk:"HIGH",scenario:"Misdiagnosis from dialect mismatch. $1.85M-$8.3M.",warn:"Levantine interpreter CANNOT serve Maghrebi patient. ALWAYS ask country of origin.",vars:[{n:"MSA (Modern Standard)",r:"Formal/Written",i:"Understood by educated speakers only. Not spoken natively.",rk:"med"},{n:"Levantine",r:"Syria/Lebanon/Jordan/Palestine",i:"75% Egyptian, 35% Maghrebi",rk:"low"},{n:"Egyptian",r:"Egypt",i:"Most widely understood via media. Bridge dialect.",rk:"low"},{n:"Gulf",r:"Saudi/UAE/Qatar/Kuwait",i:"55% Levantine, 30% Maghrebi",rk:"med"},{n:"Maghrebi",r:"Morocco/Algeria/Tunisia/Libya",i:"35% Levantine. French often better bridge.",rk:"crit"},{n:"Sudanese",r:"Sudan",i:"60% Egyptian, distinct vocabulary",rk:"med"},{n:"Iraqi",r:"Iraq",i:"70% Levantine, distinct phonology",rk:"med"},{n:"Yemeni",r:"Yemen",i:"45% Gulf, archaic features",rk:"high"}]},chinKaren:{name:"Chin-Karen-Burmese Complex",risk:"HIGH",scenario:"OB relay failure. $7M-$27M. NC/SC highest volume.",warn:"Chin is NOT one language (50+ varieties). Karen is completely separate. Burmese is NOT a reliable bridge for all.",vars:[{n:"Hakha Chin",r:"Hakha, Chin State",i:"60% Falam, 25% Tedim. Most common in US.",rk:"med"},{n:"Falam Chin",r:"Falam, Chin State",i:"60% Hakha, limited Tedim",rk:"med"},{n:"Tedim Chin",r:"Tedim, Chin State",i:"25% Hakha. DISTINCT language.",rk:"crit"},{n:"Mizo (Lushai)",r:"Mizoram, India",i:"40% Hakha. Often grouped incorrectly.",rk:"high"},{n:"Sgaw Karen",r:"Karen State, Myanmar",i:"<10% any Chin variety. Separate family.",rk:"high"},{n:"Pwo Karen",r:"Karen State, Myanmar",i:"65% Sgaw Karen",rk:"high"},{n:"Burmese",r:"Myanmar (national)",i:"Bridge ONLY if speaker proficient. Verify.",rk:"med"},{n:"Karenni (Kayah)",r:"Kayah State",i:"<20% Karen. Distinct.",rk:"crit"}]},southAsian:{name:"South Asian Complex",risk:"MED-HIGH",scenario:"Script mismatch causing medication errors. Hindi/Urdu spoken bridge fails for Dravidian.",warn:"Hindi CANNOT serve Tamil/Telugu/Malayalam (Dravidian family). Spoken Hindi-Urdu works but scripts differ.",vars:[{n:"Hindi",r:"North/Central India",i:"90% Urdu spoken. Devanagari script.",rk:"low"},{n:"Urdu",r:"Pakistan/N. India",i:"90% Hindi spoken. Nastaliq script. DIFFERENT written.",rk:"low"},{n:"Punjabi",r:"India/Pakistan",i:"60% Hindi. Gurmukhi vs Shahmukhi scripts.",rk:"med"},{n:"Bengali",r:"Bangladesh/W. Bengal",i:"30% Hindi. Growing LEP population.",rk:"high"},{n:"Gujarati",r:"Gujarat, India",i:"45% Hindi. Significant US diaspora.",rk:"med"},{n:"Tamil",r:"Tamil Nadu/Sri Lanka",i:"<10% Hindi. DRAVIDIAN. Completely separate.",rk:"crit"},{n:"Telugu",r:"Andhra Pradesh/Telangana",i:"<15% Hindi. Dravidian.",rk:"crit"},{n:"Malayalam",r:"Kerala",i:"<10% Hindi. Dravidian.",rk:"crit"},{n:"Nepali",r:"Nepal/Bhutan",i:"55% Hindi. Devanagari script.",rk:"med"},{n:"Sinhala",r:"Sri Lanka",i:"20% Hindi. Indo-Aryan but isolated.",rk:"high"}]},chinese:{name:"Chinese Language Cluster",risk:"HIGH",scenario:"Mandarin interpreter assigned to Cantonese speaker. Consent misunderstood.",warn:"Mandarin and Cantonese are NOT mutually intelligible spoken. Written bridges partially but not for LEP patients.",vars:[{n:"Mandarin",r:"Northern/Standard China",i:"National standard. Not understood by rural Cantonese/Min.",rk:"low"},{n:"Cantonese",r:"Guangdong/Hong Kong",i:"NOT intelligible with Mandarin spoken.",rk:"high"},{n:"Fuzhounese",r:"Fujian Province",i:"<10% Mandarin. Large NYC/East Coast community.",rk:"crit"},{n:"Taishanese",r:"Guangdong (Taishan)",i:"50% Cantonese. Older Chinatown communities.",rk:"high"},{n:"Hokkien/Taiwanese",r:"Fujian/Taiwan",i:"<15% Mandarin. Southern Min family.",rk:"crit"},{n:"Wenzhounese",r:"Zhejiang",i:"<5% any other Chinese variety.",rk:"crit"},{n:"Shanghainese (Wu)",r:"Shanghai/Zhejiang",i:"30% Mandarin. Declining among youth.",rk:"high"}]},eastAfrican:{name:"East African Complex",risk:"MED",scenario:"Somali Maxaa interpreter assigned to Maay speaker. Oromo confused with Amharic.",warn:"Amharic/Tigrinya NOT interchangeable (30%). Somali Maxaa vs Maay = 50%. Swahili is NOT a universal EA bridge.",vars:[{n:"Amharic",r:"Ethiopia (Amhara)",i:"30% Tigrinya. Geez script. Largest Ethiopian lang.",rk:"med"},{n:"Tigrinya",r:"Eritrea/N. Ethiopia",i:"30% Amharic. Geez script. NOT interchangeable.",rk:"med"},{n:"Oromo",r:"Ethiopia (Oromia)",i:"<5% Amharic. Cushitic not Semitic. Latin script.",rk:"crit"},{n:"Somali (Maxaa)",r:"Somalia/Kenya/Ethiopia",i:"50% Maay. Most common Somali in US.",rk:"med"},{n:"Somali (Maay Maay)",r:"Southern Somalia",i:"50% Maxaa. Often overlooked.",rk:"high"},{n:"Swahili",r:"Kenya/Tanzania/Congo",i:"Bridge for EA but NOT universal. Congo Swahili differs.",rk:"low"},{n:"Kinyarwanda",r:"Rwanda",i:"85% Kirundi. Limited Swahili bridge.",rk:"med"},{n:"Kirundi",r:"Burundi",i:"85% Kinyarwanda. French bridge common.",rk:"med"}]},westAfrican:{name:"West African Complex",risk:"MED",scenario:"Haitian Creole interpreter assigned to West African French speaker. Cultural mismatch.",warn:"West African French differs from Haitian Creole (30%). Wolof/Fulani/Yoruba/Igbo completely unrelated.",vars:[{n:"French (West African)",r:"Senegal/Guinea/Mali/Ivory Coast",i:"Standard French base but local vocabulary.",rk:"med"},{n:"Haitian Creole",r:"Haiti",i:"30% standard French. Distinct grammar.",rk:"high"},{n:"Wolof",r:"Senegal/Gambia",i:"French bridge common. Unrelated to other WA langs.",rk:"med"},{n:"Fulani (Pulaar)",r:"Guinea/Senegal/Mali/Nigeria",i:"Spread across WA. Dialect variation.",rk:"med"},{n:"Yoruba",r:"SW Nigeria/Benin",i:"<5% Igbo. English bridge.",rk:"high"},{n:"Igbo",r:"SE Nigeria",i:"<5% Yoruba. English bridge.",rk:"high"},{n:"Twi (Akan)",r:"Ghana",i:"English bridge. 30% Fante.",rk:"med"}]},mesoAmerican:{name:"Indigenous Meso-American",risk:"MED-HIGH",scenario:"Spanish interpreter cannot communicate with Kiche Maya or Mam speaker. Patient mislabeled Spanish-speaking.",warn:"NOT all Central Americans speak Spanish. Guatemala: 40% indigenous. Mayan languages mostly mutually unintelligible.",vars:[{n:"Kiche (Quiche)",r:"Guatemala highlands",i:"30% Kaqchikel. Largest Mayan language.",rk:"med"},{n:"Mam",r:"Guatemala/S. Mexico",i:"<10% Kiche. Distinct Mayan branch.",rk:"crit"},{n:"Qanjobal",r:"Guatemala (Huehuetenango)",i:"<10% other Mayan. Growing US population.",rk:"crit"},{n:"Kaqchikel",r:"Guatemala (central)",i:"30% Kiche.",rk:"med"},{n:"Mixtec",r:"Oaxaca, Mexico",i:"<5% Spanish for elders. Tonal. Multiple varieties.",rk:"crit"},{n:"Zapotec",r:"Oaxaca, Mexico",i:"<5% Mixtec. Multiple unintelligible varieties.",rk:"crit"},{n:"Nahuatl",r:"Central Mexico",i:"Some Spanish loanwords. Multiple dialects.",rk:"high"}]},slavic:{name:"Slavic Language Cluster",risk:"LOW-MED",scenario:"Russian interpreter assigned to Ukrainian speaker post-2022. Political sensitivity plus linguistic gaps.",warn:"Russian-Ukrainian 60% intelligible but politically sensitive post-2022. Many Ukrainians refuse Russian interpreters.",vars:[{n:"Russian",r:"Russia/ex-Soviet",i:"Bridge for ex-Soviet speakers. 60% Ukrainian.",rk:"low"},{n:"Ukrainian",r:"Ukraine",i:"60% Russian but political refusal common post-2022.",rk:"med"},{n:"Polish",r:"Poland",i:"30% Russian, 40% Ukrainian. Significant IL community.",rk:"high"},{n:"Bosnian/Croatian/Serbian",r:"Balkans",i:"95%+ mutual. Script differs (Latin vs Cyrillic).",rk:"low"},{n:"Bulgarian",r:"Bulgaria",i:"45% Russian. Cyrillic.",rk:"med"}]},hmongSEA:{name:"Hmong and SE Asian Highland",risk:"MED-HIGH",scenario:"Green Hmong interpreter assigned to White Hmong patient. Medication dosage miscommunicated.",warn:"White Hmong and Green Hmong ~70% intelligible but critical medical terms differ. WI/MN largest US populations.",vars:[{n:"White Hmong (Hmong Daw)",r:"Laos/Thailand/US",i:"70% Green Hmong. Most common US variety.",rk:"med"},{n:"Green Hmong (Mong Leng)",r:"Laos/Thailand/US",i:"70% White Hmong. Tonal differences matter clinically.",rk:"med"},{n:"Khmer (Cambodian)",r:"Cambodia",i:"<5% any Hmong. Mon-Khmer family.",rk:"crit"},{n:"Lao",r:"Laos",i:"85% Thai. NOT related to Hmong.",rk:"high"},{n:"Thai",r:"Thailand",i:"85% Lao. Not a bridge for Hmong.",rk:"high"},{n:"Vietnamese",r:"Vietnam",i:"<5% other SEA languages. Tonal but unrelated.",rk:"crit"}]}};
 var LID=[{c:"es",nat:"Espa\u00f1ol",g:"\u00bfHabla espa\u00f1ol?",n:"Spanish"},{c:"zh",nat:"\u4e2d\u6587",g:"\u60a8\u8bf4\u4e2d\u6587\u5417?",n:"Chinese"},{c:"vi",nat:"Ti\u1ebfng Vi\u1ec7t",g:"B\u1ea1n n\u00f3i?",n:"Vietnamese"},{c:"ko",nat:"\ud55c\uad6d\uc5b4",g:"\ud55c\uad6d\uc5b4 \ud558\uc2ed\ub2c8\uae4c?",n:"Korean"},{c:"ar",nat:"\u0627\u0644\u0639\u0631\u0628\u064a\u0629",g:"\u0647\u0644 \u062a\u062a\u0643\u0644\u0645?",n:"Arabic",rtl:true},{c:"fr",nat:"Fran\u00e7ais",g:"Parlez-vous?",n:"French"},{c:"ru",nat:"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",g:"\u0413\u043e\u0432\u043e\u0440\u0438\u0442\u0435?",n:"Russian"},{c:"hi",nat:"\u0939\u093f\u0928\u094d\u0926\u0940",g:"\u0939\u093f\u0928\u094d\u0926\u0940 \u092c\u094b\u0932\u0924\u0947?",n:"Hindi"},{c:"ur",nat:"\u0627\u0631\u062f\u0648",g:"\u0627\u0631\u062f\u0648 \u0628\u0648\u0644\u062a\u06d2?",n:"Urdu",rtl:true},{c:"am",nat:"\u12a0\u121b\u122d\u129b",g:"\u12a0\u121b\u122d\u129b?",n:"Amharic"},{c:"so",nat:"Soomaali",g:"Ma ku hadashaa?",n:"Somali"},{c:"sw",nat:"Kiswahili",g:"Kiswahili?",n:"Swahili"},{c:"my",nat:"\u1019\u103c\u1014\u103a\u1019\u102c",g:"\u1019\u103c\u1014\u103a\u1019\u102c\u1005\u1000\u102c\u1038?",n:"Burmese"},{c:"hmn",nat:"Hmoob",g:"Hais lus Hmoob?",n:"Hmong"},{c:"ne",nat:"\u0928\u0947\u092a\u093e\u0932\u0940",g:"\u0928\u0947\u092a\u093e\u0932\u0940?",n:"Nepali"},{c:"ti",nat:"\u1275\u130d\u122d\u129b",g:"\u1275\u130d\u122d\u129b?",n:"Tigrinya"},{c:"kar",nat:"Karen",g:"Karen?",n:"Karen"},{c:"cnh",nat:"Lai holh",g:"Lai holh?",n:"Hakha Chin"},{c:"kln",nat:"Kalenjin",g:"Kalenjin?",n:"Kalenjin"},{c:"ja",nat:"\u65e5\u672c\u8a9e",g:"\u65e5\u672c\u8a9e?",n:"Japanese"},{c:"pt",nat:"Portugu\u00eas",g:"Portugu\u00eas?",n:"Portuguese"}];
 var TRT=[{t:1,l:"Critical Clinical",cl:"#dc2626",ex:["Informed consent","Medication instructions","Surgical pre-op","Discharge"],req:"MUST verify by certified interpreter."},{t:2,l:"Clinical Communication",cl:"#d97706",ex:["Appointment reminders","Health education","Follow-up","Pain assessment"],req:"Verify by bilingual staff."},{t:3,l:"Operational",cl:"#059669",ex:["Room directions","Visiting hours","Parking","Cafeteria"],req:"AI acceptable with audit."}];
 var QAD=[{d:"Terminology",w:0.35,t:"Medical terms per glossary"},{d:"Register",w:0.20,t:"Formal/informal match"},{d:"Cultural",w:0.15,t:"Concepts adapted"},{d:"Completeness",w:0.15,t:"No omissions"},{d:"Readability",w:0.15,t:"Natural phrasing"}];
@@ -63,7 +63,7 @@ export default function App() {
   
   
   var _rCheck = useState({}), rCheck = _rCheck[0], setRCheck = _rCheck[1];
-  var _dSel = useState("ar"), dSel = _dSel[0], setDSel = _dSel[1];
+  var _dSel = useState("arabic"), dSel = _dSel[0], setDSel = _dSel[1];
   var _selLid = useState(null), selLid = _selLid[0], setSelLid = _selLid[1];
   var _qaT = useState(0), qaT = _qaT[0], setQaT = _qaT[1];
   var _drillR = useState(null), drillR = _drillR[0], setDrillR = _drillR[1];
@@ -93,12 +93,25 @@ export default function App() {
   var _planQ = useState(""), planQ = _planQ[0], setPlanQ = _planQ[1];
   var _planR = useState(null), planR = _planR[0], setPlanR = _planR[1];
   var _planLoading = useState(false), planLoading = _planLoading[0], setPlanLoading = _planLoading[1];
+  // CCHI Registry states
+  var _cchiQ = useState(""), cchiQ = _cchiQ[0], setCchiQ = _cchiQ[1];
+  var _cchiR = useState(null), cchiR = _cchiR[0], setCchiR = _cchiR[1];
+  var _cchiLoading = useState(false), cchiLoading = _cchiLoading[0], setCchiLoading = _cchiLoading[1];
+  var _cchiSaved = useState([]), cchiSaved = _cchiSaved[0], setCchiSaved = _cchiSaved[1];
+  var cchiQRef = useRef(null);
+  var _selVar = useState(null), selVar = _selVar[0], setSelVar = _selVar[1];
+  var _varLoading = useState(false), varLoading = _varLoading[0], setVarLoading = _varLoading[1];
+  var _varData = useState(null), varData = _varData[0], setVarData = _varData[1];
+  var _webIntR = useState(null), webIntR = _webIntR[0], setWebIntR = _webIntR[1];
+  var _webIntLoading = useState(false), webIntLoading = _webIntLoading[0], setWebIntLoading = _webIntLoading[1];
+
 
   // Storage persistence
   useEffect(function(){
     try {
       window.storage.get("ll_cases").then(function(r){if(r&&r.value)setSavedCases(JSON.parse(r.value))}).catch(function(){});
       window.storage.get("ll_insights").then(function(r){if(r&&r.value)setSavedInsights(JSON.parse(r.value))}).catch(function(){});
+      window.storage.get("ll_cchi").then(function(r){if(r&&r.value)setCchiSaved(JSON.parse(r.value))}).catch(function(){});
     } catch(e){}
   },[]);
   var persist = function(k,d){try{window.storage.set(k,JSON.stringify(d)).catch(function(){})}catch(e){}};
@@ -177,6 +190,34 @@ export default function App() {
     });
   };
 
+  
+
+
+  var runDialectDeep = function(dialectName, region, cluster){
+    setVarLoading(true);setVarData(null);setSelVar(dialectName);
+    apiCall("You are a linguistic anthropologist specializing in healthcare interpreting. Provide a rich, detailed profile of a language/dialect. Include its history, origins, evolution, cultural context, and healthcare-specific considerations. Return ONLY JSON: {profile:{name:string,family:string,familyBranch:string,origins:string,history:string,evolution:string,speakers:string,writingSystem:string,culturalContext:string,healthcareNotes:string,keyFacts:[string],commonMisconceptions:[string],dialectFeatures:string,migrationPatterns:string,usPopulation:string,healthcareChallenges:[string],interpreterTips:[string]}}", "Give me a deep linguistic profile of " + dialectName + " (" + region + ") from the " + cluster + " language cluster. Focus on: 1) Language family and historical origins 2) How the language evolved and split from related languages 3) Writing system and literacy 4) Migration patterns to the US 5) Cultural health beliefs that affect interpreting 6) Common misconceptions 7) Specific healthcare interpreting challenges 8) Tips for interpreter dispatch", function(data, err){
+      if(data){setVarData(data)}else{setVarData({profile:{name:dialectName,history:"Could not load. " + (err||""),origins:"",evolution:"",speakers:"",culturalContext:"",healthcareNotes:"",keyFacts:[],commonMisconceptions:[],interpreterTips:[]}})}
+      setVarLoading(false);
+    });
+  };;
+
+  var runWebIntSearch = function(q){
+    if(!q.trim())return;setWebIntLoading(true);setWebIntR(null);
+    apiCall("You are a healthcare interpreter recruitment researcher for Advocate Health (IL,WI,NC,SC,GA,AL). Search the web for qualified medical interpreters, interpreter agencies, and interpreter training programs matching the query. Look for CCHI-certified, NBCMI-certified, or qualified bilingual healthcare professionals. Organize results into categories. Return ONLY JSON: {agencies:[{name:string,location:string,languages:string,website:string,note:string}],interpreters:[{name:string,credential:string,language:string,location:string,contact:string}],resources:[{name:string,type:string,url:string,note:string}],summary:string}", q, function(data,err){
+      if(data){setWebIntR(data)}else{setWebIntR({results:[],summary:err||"Search error"})}
+      setWebIntLoading(false);
+    });
+  };
+
+  var runCchiAgent = function(q){
+    if(!q.trim())return;setCchiLoading(true);setCchiR(null);
+    apiCall("You are a CCHI certified healthcare interpreter registry researcher. Search the web for CCHI-certified interpreters matching the query. The CCHI National Healthcare Interpreter Registry is at https://cchi.learningbuilder.com/Public/MemberSearch/Search and the registry browser is at https://cchi.learningbuilder.com/Search/Public/MemberRole/Registry. Credentials include CoreCHI, CoreCHI-P, and CHI (language-specific: Spanish, Arabic, Mandarin). Search for interpreters by state, language, or name. Return ONLY JSON: {interpreters:[{name:string,credential:string,language:string,state:string,status:string,email:string}],registryNote:string,totalFound:number,searchTip:string}", q, function(data,err){
+      if(data){setCchiR(data)}else{setCchiR({interpreters:[],registryNote:err||"Could not parse results. Try the direct registry link below.",totalFound:0,searchTip:""})}
+      setCchiLoading(false);
+    });
+  };
+  var saveCchi = function(interp){var nc=cchiSaved.concat([Object.assign({},interp,{ts:new Date().toISOString()})]);setCchiSaved(nc);persist("ll_cchi",nc)};
+
   var saveCaseA = function(c){var nc=savedCases.concat([Object.assign({},c,{ts:new Date().toISOString()})]);setSavedCases(nc);persist("ll_cases",nc)};
   var saveIns = function(t,ty){var ni=savedInsights.concat([{text:t,type:ty,ts:new Date().toISOString()}]);setSavedInsights(ni);persist("ll_insights",ni)};
   var catC = {community:"#059669",technology:"#0891b2",linguistic:"#7c3aed",documentation:"#d97706",vendor:"#dc2626",internal:"#3b82f6"};
@@ -200,10 +241,11 @@ export default function App() {
       {tab==="match" && (<div>
         <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,color:"#0f172a",marginBottom:16}}>Interpreter Match</h1>
         <P style={{marginBottom:16}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-            <div><SL>Language</SL><input ref={langRef} defaultValue={lang} onBlur={function(e){setLang(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")setLang(e.target.value)}} placeholder="e.g. Spanish, Arabic... (press Enter)" style={{width:"100%",padding:"8px 12px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:11,fontFamily:"monospace",outline:"none",boxSizing:"border-box"}}/></div>
-            <div><SL>Location</SL><input ref={locRef} defaultValue={loc} onBlur={function(e){setLoc(e.target.value)}} onKeyDown={function(e){if(e.key==="Enter")setLoc(e.target.value)}} placeholder="e.g. Chicago... (press Enter)" style={{width:"100%",padding:"8px 12px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:11,fontFamily:"monospace",outline:"none",boxSizing:"border-box"}}/></div>
-            <div><SL>Modality</SL><div style={{display:"flex",gap:4}}>{["","In-Person","VRI","OPI"].map(function(m){return pill(m||"All",mod||"All",function(v){setMod(v==="All"?"":v)})})}</div></div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr auto",gap:10,alignItems:"end"}}>
+            <div><SL>Language</SL><input ref={langRef} defaultValue={lang} onKeyDown={function(e){if(e.key==="Enter"){setLang(e.target.value)}}} placeholder="e.g. Spanish, Arabic..." style={{width:"100%",padding:"8px 12px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:11,fontFamily:"monospace",outline:"none",boxSizing:"border-box"}}/></div>
+            <div><SL>Location</SL><input ref={locRef} defaultValue={loc} onKeyDown={function(e){if(e.key==="Enter"){setLoc(e.target.value)}}} placeholder="e.g. Illinois..." style={{width:"100%",padding:"8px 12px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:11,fontFamily:"monospace",outline:"none",boxSizing:"border-box"}}/></div>
+            <div><SL>Modality</SL><div style={{display:"flex",gap:4}}>{["","In-Person","Video","Phone"].map(function(m){return pill(m||"All",mod||"All",function(v){setMod(v==="All"?"":v)})})}</div></div>
+            <button onClick={function(){var l=langRef.current?langRef.current.value:"";var lo=locRef.current?locRef.current.value:"";setLang(l);setLoc(lo)}} style={Object.assign({},abtn,{background:"#0891b2",color:"#fff",padding:"8px 20px"})}>Search</button>
           </div>
         </P>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:10}}>
@@ -214,15 +256,34 @@ export default function App() {
             <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{ip.mods.map(function(m){return (<Tag key={m} c="#7c3aed">{m}</Tag>)})}</div>
           </P>)})}
         </div>
-        {fInterps.length===0 && (<P style={{textAlign:"center",padding:30}}><div style={{fontSize:11,color:"#d97706"}}>No interpreters match. Adjust filters or check vendor availability.</div></P>)}
-        {lang && LR[lang.toLowerCase().slice(0,2)] && (<P style={{marginTop:16,background:"#f0f9ff",borderColor:"#0891b220"}}>
+        {fInterps.length===0 && (<P style={{textAlign:"center",padding:20}}><div style={{fontSize:11,color:"#d97706"}}>No internal interpreters match. Try the web search below.</div></P>)}
+        {lang && LR[lang.toLowerCase().slice(0,2)] && (<P style={{marginTop:12,background:"#f0f9ff",borderColor:"#0891b220"}}>
           <SL color="#0891b2">Language Network: {lang}</SL>
           {(function(){var lr=LR[lang.toLowerCase().slice(0,2)];return lr?(<div>
             <div style={{fontSize:11,color:"#475569",marginBottom:8}}>{lr.cult}</div>
             {lr.mi.length>0 && (<div style={{marginBottom:8}}><div style={{fontSize:9,fontWeight:700,color:"#7c3aed",marginBottom:4}}>MUTUAL INTELLIGIBILITY</div>{lr.mi.map(function(m){return (<div key={m.c} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid #f1f5f9"}}><span style={{fontSize:10}}>{m.n}</span><span style={{fontSize:10,color:m.p>60?"#059669":"#d97706"}}>{m.p}% - {m.t}</span></div>)})}</div>)}
-            {lr.cb.length>0 && (<div style={{marginBottom:8}}><div style={{fontSize:9,fontWeight:700,color:"#059669",marginBottom:4}}>BRIDGE LANGUAGES</div>{lr.cb.map(function(c){return (<div key={c.c} style={{fontSize:10,padding:"3px 0"}}>{c.n} ({c.pr}) - {c.t}</div>)})}</div>)}
+            {lr.cb.length>0 && (<div><div style={{fontSize:9,fontWeight:700,color:"#059669",marginBottom:4}}>BRIDGE LANGUAGES</div>{lr.cb.map(function(c){return (<div key={c.c} style={{fontSize:10,padding:"3px 0"}}>{c.n} ({c.pr}) - {c.t}</div>)})}</div>)}
           </div>):null})()}
         </P>)}
+        <P style={{marginTop:16,background:"linear-gradient(135deg,#0f172a,#1e293b)",color:"#fff"}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#0891b2",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>Web Interpreter Search</div>
+          <div style={{fontSize:10,color:"#94a3b8",marginBottom:10}}>Search the web for certified interpreters, agencies, and training programs in your area.</div>
+          <div style={{display:"flex",gap:8,marginBottom:8}}><input defaultValue="" onKeyDown={function(e){if(e.key==="Enter")runWebIntSearch(e.target.value)}} placeholder="e.g. Spanish medical interpreters Chicago CCHI certified" style={{flex:1,padding:"10px 14px",borderRadius:8,border:"1px solid #334155",background:"#1e293b",color:"#fff",fontSize:12,fontFamily:"monospace",outline:"none"}}/><button onClick={function(e){var inp=e.target.previousSibling;runWebIntSearch(inp?inp.value:"")}} disabled={webIntLoading} style={Object.assign({},abtn,{background:webIntLoading?"#334155":"#0891b2",color:"#fff"})}>{webIntLoading?"Searching...":"Find"}</button></div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{["Spanish interpreters Illinois CCHI","Arabic medical interpreter North Carolina","Karen Chin interpreter recruitment","Somali healthcare interpreter Wisconsin","ASL interpreter Georgia","Mandarin interpreter Alabama"].map(function(s){return (<button key={s} onClick={function(){runWebIntSearch(s)}} style={{fontSize:9,padding:"3px 8px",borderRadius:6,border:"1px solid #334155",background:"#0f172a",color:"#94a3b8",cursor:"pointer"}}>{s}</button>)})}</div>
+        </P>
+        {webIntLoading && (<P style={{textAlign:"center",padding:20,marginTop:8}}><div style={{fontSize:12,fontWeight:700,color:"#0891b2"}}>Searching the web for interpreters...</div></P>)}
+        {webIntR && (<div style={{marginTop:12}} className="fade-in">
+          {webIntR.summary && (<div style={{fontSize:12,color:"#0f172a",fontWeight:600,marginBottom:12,padding:10,background:"#f0f9ff",borderRadius:8,borderLeft:"3px solid #0891b2"}}>{webIntR.summary}</div>)}
+          {webIntR.agencies && webIntR.agencies.length > 0 && (<div style={{marginBottom:16}}><div style={{fontSize:11,fontWeight:700,color:"#0891b2",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Agencies & Organizations</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8}}>{webIntR.agencies.map(function(a,i){return (<div key={i} style={{padding:14,borderRadius:10,border:"1px solid #e2e8f0",borderTop:"3px solid #0891b2",background:"#fff"}}><div style={{fontSize:13,fontWeight:800,fontFamily:"Outfit",marginBottom:4}}>{a.name}</div>{a.location && (<div style={{fontSize:10,color:"#059669",marginBottom:4}}>{a.location}</div>)}{a.languages && (<div style={{fontSize:10,color:"#7c3aed",marginBottom:4}}>{a.languages}</div>)}{a.note && (<div style={{fontSize:10,color:"#475569",marginBottom:6}}>{a.note}</div>)}{a.website && (<a href={a.website.startsWith("http")?a.website:"https://"+a.website} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#0891b2",textDecoration:"none",fontWeight:600}}>Visit Website</a>)}</div>)})}</div>
+          </div>)}
+          {webIntR.interpreters && webIntR.interpreters.length > 0 && (<div style={{marginBottom:16}}><div style={{fontSize:11,fontWeight:700,color:"#7c3aed",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Individual Interpreters</div>
+            <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:10,background:"#fff",borderRadius:8}}><thead><tr style={{borderBottom:"2px solid #e2e8f0",background:"#f8fafc"}}><td style={{padding:10,fontWeight:700}}>Name</td><td style={{padding:10,fontWeight:700}}>Credential</td><td style={{padding:10,fontWeight:700}}>Language</td><td style={{padding:10,fontWeight:700}}>Location</td><td style={{padding:10,fontWeight:700}}>Contact</td></tr></thead><tbody>{webIntR.interpreters.map(function(p,i){return (<tr key={i} style={{borderBottom:"1px solid #f1f5f9"}}><td style={{padding:10,fontWeight:600}}>{p.name}</td><td style={{padding:10}}>{p.credential && (<Tag c="#7c3aed">{p.credential}</Tag>)}</td><td style={{padding:10}}>{p.language}</td><td style={{padding:10,color:"#64748b"}}>{p.location}</td><td style={{padding:10,color:"#0891b2"}}>{p.contact}</td></tr>)})}</tbody></table></div>
+          </div>)}
+          {webIntR.resources && webIntR.resources.length > 0 && (<div><div style={{fontSize:11,fontWeight:700,color:"#059669",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Resources & Training</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:8}}>{webIntR.resources.map(function(r,i){return (<div key={i} style={{padding:12,borderRadius:10,border:"1px solid #e2e8f0",background:"#fff"}}><div style={{display:"flex",justifyContent:"space-between"}}><div style={{fontSize:12,fontWeight:700,fontFamily:"Outfit"}}>{r.name}</div>{r.type && (<Tag c="#64748b">{r.type}</Tag>)}</div>{r.note && (<div style={{fontSize:10,color:"#475569",marginTop:4}}>{r.note}</div>)}{r.url && (<a href={r.url} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#0891b2",textDecoration:"none",fontWeight:600,marginTop:4,display:"inline-block"}}>Visit</a>)}</div>)})}</div>
+          </div>)}
+        </div>)}
       </div>)}
 
       {tab==="translate" && (<div>
@@ -277,33 +338,68 @@ export default function App() {
       </div>)}
 
       {tab==="dialect" && (<div>
-        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:16}}>Dialect Clusters</h1>
-        <div style={{display:"flex",gap:4,marginBottom:16}}>{Object.keys(DC).map(function(k){return pill(k,dSel,setDSel)})}</div>
-        {(function(){var dc=DC[dSel];if(!dc)return null;return (<div>
-          <P style={{marginBottom:16}}><SL color="#dc2626">{dc.name}</SL>
-            <div style={{fontSize:11,color:"#475569",marginBottom:8}}>{dc.scenario}</div>
-            <div style={{fontSize:10,fontWeight:700,color:"#dc2626"}}>{dc.risk}</div>
-          </P>
-          <P><SL color="#7c3aed">Intelligibility Matrix</SL>
-            <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:10}}>
-              <thead><tr><td style={{padding:6,fontWeight:700}}>Pair</td><td style={{padding:6,fontWeight:700}}>Score</td><td style={{padding:6,fontWeight:700}}>Note</td></tr></thead>
-              <tbody>{dc.mx.map(function(m,i){return (<tr key={i} style={{borderBottom:"1px solid #f1f5f9"}}><td style={{padding:6}}>{m.p}</td><td style={{padding:6,color:m.s>60?"#059669":"#dc2626",fontWeight:700}}>{m.s}%</td><td style={{padding:6,color:"#64748b"}}>{m.n}</td></tr>)})}</tbody>
-            </table></div>
-          </P>
+        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:4}}>Dialect Clusters</h1>
+        <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>9 high-risk language clusters with 68 dialect variants. Tap a variant card for AI-powered deep dive into language history, culture, and healthcare considerations.</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:6,marginBottom:20}}>{Object.keys(DC).map(function(k){var dc=DC[k];var rc=dc.risk==="HIGH"?"#dc2626":dc.risk==="MED-HIGH"?"#d97706":dc.risk==="MED"?"#0891b2":"#059669";return (<button key={k} onClick={function(){setDSel(k);setSelVar(null);setVarData(null)}} style={{padding:"10px 8px",borderRadius:10,border:dSel===k?"2px solid "+rc:"1px solid #e2e8f0",background:dSel===k?rc+"08":"#fff",cursor:"pointer",textAlign:"left",transition:"all 0.15s"}}><div style={{fontSize:9,fontWeight:700,color:rc,marginBottom:2}}>{dc.risk}</div><div style={{fontSize:11,fontWeight:700,fontFamily:"Outfit",color:"#0f172a"}}>{dc.name}</div><div style={{fontSize:9,color:"#94a3b8"}}>{dc.vars.length} variants</div></button>)})}</div>
+        {(function(){var dc=DC[dSel];if(!dc)return null;var rkC={crit:"#dc2626",high:"#d97706",med:"#0891b2",low:"#059669"};return (<div className="fade-in">
+          <div style={{background:"linear-gradient(135deg,#0f172a,#1e293b)",borderRadius:16,padding:24,marginBottom:16,color:"#fff"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}><div><div style={{fontSize:22,fontWeight:800,fontFamily:"Outfit"}}>{dc.name}</div><div style={{fontSize:11,color:"#94a3b8",marginTop:4}}>{dc.vars.length} dialect variants mapped</div></div><div style={{padding:"6px 14px",borderRadius:8,background:dc.risk==="HIGH"?"#dc262620":"#d9760620",color:dc.risk==="HIGH"?"#fca5a5":"#fde68a",fontSize:12,fontWeight:700}}>{dc.risk} RISK</div></div>
+            <div style={{fontSize:12,color:"#cbd5e1",lineHeight:1.6,marginBottom:12}}>{dc.scenario}</div>
+            <div style={{padding:12,background:"#dc262615",borderRadius:10,border:"1px solid #dc262640"}}><div style={{fontSize:10,fontWeight:700,color:"#fca5a5",marginBottom:2}}>DISPATCH WARNING</div><div style={{fontSize:11,color:"#fecaca"}}>{dc.warn}</div></div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:10,marginBottom:16}}>
+            {dc.vars.map(function(v,i){var col=rkC[v.rk]||"#94a3b8";var isActive=selVar===v.n;return (<div key={i} onClick={function(){if(selVar===v.n){setSelVar(null);setVarData(null)}else{runDialectDeep(v.n,v.r,dc.name)}}} style={{padding:16,borderRadius:12,border:isActive?"2px solid "+col:"1px solid #e2e8f0",borderTop:"3px solid "+col,background:isActive?"#f8fafc":"#fff",cursor:"pointer",transition:"all 0.15s"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{fontSize:13,fontWeight:800,fontFamily:"Outfit"}}>{v.n}</div><div style={{fontSize:8,fontWeight:700,padding:"2px 8px",borderRadius:6,background:col+"15",color:col,textTransform:"uppercase"}}>{v.rk}</div></div>
+              <div style={{fontSize:10,color:"#7c3aed",fontWeight:600,marginBottom:4}}>{v.r}</div>
+              <div style={{fontSize:10,color:"#475569",lineHeight:1.5}}>{v.i}</div>
+              <div style={{fontSize:8,color:"#0891b2",marginTop:6,fontWeight:600}}>Tap for deep dive</div>
+            </div>)})}
+          </div>
+
+          {varLoading && (<div style={{padding:30,textAlign:"center",background:"#f8fafc",borderRadius:12,border:"1px solid #e2e8f0"}}><div style={{fontSize:14,fontWeight:700,color:"#0891b2",marginBottom:4}}>Researching {selVar}...</div><div style={{fontSize:10,color:"#94a3b8"}}>Loading language history, cultural context, and healthcare considerations</div></div>)}
+
+          {varData && varData.profile && !varLoading && (<div className="fade-in" style={{background:"#fff",borderRadius:16,border:"1px solid #e2e8f0",overflow:"hidden",marginBottom:16}}>
+            <div style={{background:"linear-gradient(135deg,#7c3aed,#6d28d9)",padding:20,color:"#fff"}}><div style={{fontSize:20,fontWeight:800,fontFamily:"Outfit"}}>{varData.profile.name}</div>{varData.profile.family && (<div style={{fontSize:11,color:"#ddd6fe",marginTop:4}}>Language Family: {varData.profile.family}{varData.profile.familyBranch?" > "+varData.profile.familyBranch:""}</div>)}{varData.profile.speakers && (<div style={{fontSize:10,color:"#c4b5fd",marginTop:2}}>Speakers: {varData.profile.speakers}</div>)}</div>
+            <div style={{padding:20}}>
+              {varData.profile.origins && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#7c3aed",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Origins</div><div style={{fontSize:11,color:"#475569",lineHeight:1.7}}>{varData.profile.origins}</div></div>)}
+              {varData.profile.history && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#0891b2",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>History & Evolution</div><div style={{fontSize:11,color:"#475569",lineHeight:1.7}}>{varData.profile.history}</div></div>)}
+              {varData.profile.evolution && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#059669",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Language Development</div><div style={{fontSize:11,color:"#475569",lineHeight:1.7}}>{varData.profile.evolution}</div></div>)}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+                {varData.profile.writingSystem && (<div style={{padding:12,background:"#f8fafc",borderRadius:10}}><div style={{fontSize:9,fontWeight:700,color:"#64748b",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Writing System</div><div style={{fontSize:11,color:"#0f172a"}}>{varData.profile.writingSystem}</div></div>)}
+                {varData.profile.usPopulation && (<div style={{padding:12,background:"#f0f9ff",borderRadius:10}}><div style={{fontSize:9,fontWeight:700,color:"#64748b",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>US Population</div><div style={{fontSize:11,color:"#0f172a"}}>{varData.profile.usPopulation}</div></div>)}
+              </div>
+              {varData.profile.migrationPatterns && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#d97706",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Migration to the US</div><div style={{fontSize:11,color:"#475569",lineHeight:1.7}}>{varData.profile.migrationPatterns}</div></div>)}
+              {varData.profile.culturalContext && (<div style={{marginBottom:16,padding:14,background:"#fffbeb",borderRadius:10,border:"1px solid #fde68a"}}><div style={{fontSize:10,fontWeight:700,color:"#92400e",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Cultural Context & Health Beliefs</div><div style={{fontSize:11,color:"#78350f",lineHeight:1.7}}>{varData.profile.culturalContext}</div></div>)}
+              {varData.profile.dialectFeatures && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#7c3aed",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Distinctive Features</div><div style={{fontSize:11,color:"#475569",lineHeight:1.7}}>{varData.profile.dialectFeatures}</div></div>)}
+              {varData.profile.keyFacts && varData.profile.keyFacts.length > 0 && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#0891b2",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Key Facts</div><div style={{display:"grid",gap:4}}>{varData.profile.keyFacts.map(function(f,i){return (<div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",fontSize:11,color:"#475569"}}><span style={{color:"#0891b2",fontWeight:700,flexShrink:0}}>-</span>{f}</div>)})}</div></div>)}
+              {varData.profile.commonMisconceptions && varData.profile.commonMisconceptions.length > 0 && (<div style={{marginBottom:16,padding:14,background:"#fef2f2",borderRadius:10,border:"1px solid #fca5a5"}}><div style={{fontSize:10,fontWeight:700,color:"#991b1b",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Common Misconceptions</div><div style={{display:"grid",gap:4}}>{varData.profile.commonMisconceptions.map(function(m,i){return (<div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",fontSize:11,color:"#991b1b"}}><span style={{fontWeight:700,flexShrink:0}}>X</span>{m}</div>)})}</div></div>)}
+              {varData.profile.healthcareChallenges && varData.profile.healthcareChallenges.length > 0 && (<div style={{marginBottom:16}}><div style={{fontSize:10,fontWeight:700,color:"#dc2626",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Healthcare Interpreting Challenges</div><div style={{display:"grid",gap:4}}>{varData.profile.healthcareChallenges.map(function(h,i){return (<div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",fontSize:11,color:"#475569"}}><span style={{color:"#dc2626",fontWeight:700,flexShrink:0}}>!</span>{h}</div>)})}</div></div>)}
+              {varData.profile.interpreterTips && varData.profile.interpreterTips.length > 0 && (<div style={{padding:14,background:"#f0fdf4",borderRadius:10,border:"1px solid #bbf7d0"}}><div style={{fontSize:10,fontWeight:700,color:"#166534",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Interpreter Dispatch Tips</div><div style={{display:"grid",gap:4}}>{varData.profile.interpreterTips.map(function(t,i){return (<div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",fontSize:11,color:"#166534"}}><span style={{fontWeight:700,flexShrink:0}}>+</span>{t}</div>)})}</div></div>)}
+              {varData.profile.healthcareNotes && (<div style={{marginTop:16,padding:14,background:"#0f172a",borderRadius:10}}><div style={{fontSize:10,fontWeight:700,color:"#0891b2",textTransform:"uppercase",letterSpacing:1.5,marginBottom:6}}>Advocate Health Notes</div><div style={{fontSize:11,color:"#cbd5e1",lineHeight:1.7}}>{varData.profile.healthcareNotes}</div></div>)}
+            </div>
+          </div>)}
         </div>)})()}
       </div>)}
 
       {tab==="langid" && (<div>
-        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:16}}>Language Identification</h1>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:10}}>
-          {LID.map(function(l,i){return (<P key={i} onClick={function(){setSelLid(selLid===i?null:i)}} style={{cursor:"pointer",border:selLid===i?"2px solid #0891b2":"1px solid #e2e8f0"}}>
+        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:4}}>Language Identification</h1>
+        <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>Tap a language to identify. Shows native script, greeting phrase, and language details for frontline staff.</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:8}}>
+          {LID.map(function(l,i){var isOpen=selLid===i;return (<div key={i} onClick={function(){setSelLid(isOpen?null:i)}} style={{padding:14,borderRadius:12,border:isOpen?"2px solid #0891b2":"1px solid #e2e8f0",background:isOpen?"#f0f9ff":"#fff",cursor:"pointer",transition:"all 0.15s"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div><div style={{fontSize:14,fontWeight:800,fontFamily:"Outfit"}}>{l.n}</div></div>
-              
+              <div style={{fontSize:14,fontWeight:800,fontFamily:"Outfit"}}>{l.n}</div>
+              <div style={{fontSize:9,color:"#94a3b8"}}>{l.c.toUpperCase()}</div>
             </div>
-            <div style={{fontSize:18,marginTop:8,color:"#0f172a"}}>{l.nat}</div>
-            <div style={{fontSize:11,color:"#475569",fontStyle:"italic",marginTop:4}}>\"{l.g}\"</div>
-          </P>)})}
+            <div style={{fontSize:20,marginTop:6,fontWeight:600}}>{l.nat}</div>
+            {isOpen && (<div className="fade-in" style={{marginTop:10,paddingTop:10,borderTop:"1px solid #e2e8f0"}}>
+              <div style={{marginBottom:8}}><div style={{fontSize:9,fontWeight:700,color:"#7c3aed",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Greeting Phrase</div><div style={{fontSize:16,fontWeight:600,color:"#0891b2",padding:10,background:"#f0f9ff",borderRadius:8,textAlign:"center"}}>{l.g}</div></div>
+              <div style={{fontSize:10,color:"#475569",lineHeight:1.6}}>
+                <div><span style={{fontWeight:700}}>ISO Code:</span> {l.c}</div>
+                <div><span style={{fontWeight:700}}>Native Name:</span> {l.nat}</div>
+                <div style={{marginTop:6,padding:8,background:"#059669",borderRadius:8,color:"#fff",textAlign:"center",fontSize:11,fontWeight:700}}>Show this to patient for identification</div>
+              </div>
+            </div>)}
+          </div>)})}
         </div>
       </div>)}
 
@@ -345,39 +441,110 @@ export default function App() {
       </div>)}
 
       {tab==="research" && (<div>
-        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:16}}>Research Library</h1>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(350px,1fr))",gap:10}}>
-          {ORES.map(function(r,i){var exp=drillR===r.id;var cc={outcomes:"#059669",safety:"#dc2626",cost:"#d97706",quality:"#0891b2",equity:"#7c3aed"};return (<P key={r.id} onClick={function(){setDrillR(exp?null:r.id)}} style={{borderLeft:"3px solid "+(cc[r.ca]||"#94a3b8"),cursor:"pointer"}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><Tag c={cc[r.ca]}>{r.ca}</Tag><Tag c="#64748b">{r.yr}</Tag></div>
-            <div style={{fontSize:13,fontWeight:700,fontFamily:"Outfit",marginBottom:4}}>{r.ti}</div>
-            <div style={{fontSize:10,color:"#64748b",lineHeight:1.5}}>{r.fi}</div>
-            {exp && (<div style={{marginTop:12,borderTop:"1px solid #e2e8f0",paddingTop:12}}>
-              {r.meth && (<div style={{fontSize:10,color:"#475569",marginBottom:8}}><span style={{fontWeight:700}}>Method: </span>{r.me}</div>)}
-              <div style={{fontSize:10,color:"#64748b"}}><span style={{fontWeight:700}}>Journal: </span>{r.jn}</div>
-              {r.doi && r.doi!=="N/A" && (<div style={{fontSize:10,color:"#0891b2",wordBreak:"break-all"}}>DOI: {r.doi}</div>)}
-              {r.n && (<div style={{fontSize:10,color:"#64748b"}}>Sample: {r.n}</div>)}
+        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:4}}>Research Library</h1>
+        <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>Peer-reviewed studies on language access, patient safety, and interpreter effectiveness. Tap to expand.</p>
+        <div style={{display:"grid",gap:10}}>
+          {ORES.map(function(r){var exp=drillR===r.id;var cc={outcomes:"#059669",safety:"#dc2626",cost:"#d97706",quality:"#0891b2",equity:"#7c3aed"};var col=cc[r.ca]||"#94a3b8";return (<div key={r.id} onClick={function(){setDrillR(exp?null:r.id)}} style={{padding:16,borderRadius:12,border:"1px solid #e2e8f0",borderLeft:"4px solid "+col,background:exp?"#f8fafc":"#fff",cursor:"pointer",transition:"all 0.15s"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:800,fontFamily:"Outfit",color:"#0f172a",lineHeight:1.3}}>{r.ti}</div><div style={{fontSize:10,color:"#64748b",marginTop:4}}>{r.au}</div></div>
+              <div style={{display:"flex",gap:4,flexShrink:0,marginLeft:8}}><Tag c={col}>{r.ca}</Tag><Tag c="#64748b">{r.yr}</Tag></div>
+            </div>
+            {exp && (<div className="fade-in" style={{marginTop:12,paddingTop:12,borderTop:"1px solid #e2e8f0"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+                <div><div style={{fontSize:9,fontWeight:700,color:"#7c3aed",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Key Findings</div><div style={{fontSize:11,color:"#475569",lineHeight:1.6,padding:10,background:"#f0f9ff",borderRadius:8}}>{r.fi}</div></div>
+                <div><div style={{fontSize:9,fontWeight:700,color:"#059669",textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>Methodology</div><div style={{fontSize:11,color:"#475569",lineHeight:1.6,padding:10,background:"#f0fdf4",borderRadius:8}}>{r.me}</div></div>
+              </div>
+              <div style={{display:"flex",gap:12,fontSize:10,color:"#64748b"}}>
+                <div><span style={{fontWeight:700}}>Journal:</span> {r.jn}</div>
+                <div><span style={{fontWeight:700}}>Volume:</span> {r.vol}</div>
+                <div><span style={{fontWeight:700}}>Sample:</span> {r.n}</div>
+              </div>
+              {r.doi && (<a href={"https://doi.org/"+r.doi} target="_blank" rel="noopener noreferrer" style={{display:"inline-block",marginTop:8,fontSize:10,color:"#0891b2",textDecoration:"none",fontWeight:600}}>DOI: {r.doi}</a>)}
             </div>)}
-          </P>)})}
+          </div>)})}
         </div>
       </div>)}
 
       {tab==="forecast" && (<div>
-        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:16}}>Demographic Forecasting</h1>
+        <h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,marginBottom:4}}>Demographic Forecasting</h1>
+        <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>LEP population projections 2024-2030 across Advocate Health's 6-state footprint. Tap a state to drill down.</p>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
-          <P style={{textAlign:"center"}}><div style={{fontSize:9,color:"#94a3b8"}}>LEP 2024</div><div style={{fontSize:26,fontWeight:900,fontFamily:"Outfit"}}>{(tl24/1e6).toFixed(2)}M</div></P>
-          <P style={{textAlign:"center"}}><div style={{fontSize:9,color:"#94a3b8"}}>2030</div><div style={{fontSize:26,fontWeight:900,color:"#0891b2",fontFamily:"Outfit"}}>{(tl30/1e6).toFixed(2)}M</div></P>
-          <P style={{textAlign:"center"}}><div style={{fontSize:9,color:"#94a3b8"}}>GROWTH</div><div style={{fontSize:26,fontWeight:900,color:"#059669",fontFamily:"Outfit"}}>{((tl30-tl24)/tl24*100).toFixed(1)}%</div></P>
+          <P style={{textAlign:"center",background:"linear-gradient(135deg,#f8fafc,#f0f9ff)"}}><div style={{fontSize:9,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1}}>Total LEP 2024</div><div style={{fontSize:28,fontWeight:900,fontFamily:"Outfit"}}>{(tl24/1e6).toFixed(2)}M</div></P>
+          <P style={{textAlign:"center",background:"linear-gradient(135deg,#f0f9ff,#f0fdf4)"}}><div style={{fontSize:9,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1}}>Projected 2030</div><div style={{fontSize:28,fontWeight:900,color:"#0891b2",fontFamily:"Outfit"}}>{(tl30/1e6).toFixed(2)}M</div></P>
+          <P style={{textAlign:"center",background:"linear-gradient(135deg,#f0fdf4,#fefce8)"}}><div style={{fontSize:9,color:"#94a3b8",textTransform:"uppercase",letterSpacing:1}}>Growth</div><div style={{fontSize:28,fontWeight:900,color:"#059669",fontFamily:"Outfit"}}>+{((tl30-tl24)/tl24*100).toFixed(1)}%</div></P>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:10}}>
-          {DEMOP.map(function(d){return (<P key={d.st} onClick={function(){setDFc(dFc===d.st?null:d.st)}} style={{cursor:"pointer",borderLeft:"3px solid #0891b2"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{fontSize:16,fontWeight:800,fontFamily:"Outfit"}}>{d.st}</div><Tag c="#059669">{(d.g*100).toFixed(1)}% growth</Tag></div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-              <div><div style={{fontSize:9,color:"#94a3b8"}}>LEP 2024</div><div style={{fontSize:14,fontWeight:700}}>{(d.l24/1e3).toFixed(0)}K</div></div>
-              <div><div style={{fontSize:9,color:"#94a3b8"}}>LEP 2030</div><div style={{fontSize:14,fontWeight:700,color:"#0891b2"}}>{(d.l30/1e3).toFixed(0)}K</div></div>
+        <div style={{display:"grid",gap:10}}>
+          {DEMOP.map(function(d){var isOpen=dFc===d.st;return (<div key={d.st} onClick={function(){setDFc(isOpen?null:d.st)}} style={{padding:16,borderRadius:12,border:"1px solid #e2e8f0",borderLeft:"3px solid #0891b2",background:isOpen?"#f8fafc":"#fff",cursor:"pointer",transition:"all 0.15s"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div style={{fontSize:16,fontWeight:800,fontFamily:"Outfit"}}>{d.st}</div>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}><div style={{textAlign:"right"}}><div style={{fontSize:9,color:"#94a3b8"}}>2024</div><div style={{fontSize:14,fontWeight:700}}>{(d.l24/1e3).toFixed(0)}K</div></div><div style={{fontSize:16,color:"#0891b2",fontWeight:300}}>-&gt;</div><div style={{textAlign:"right"}}><div style={{fontSize:9,color:"#94a3b8"}}>2030</div><div style={{fontSize:14,fontWeight:700,color:"#0891b2"}}>{(d.l30/1e3).toFixed(0)}K</div></div><Tag c="#059669">{(d.g*100).toFixed(1)}%</Tag></div>
             </div>
-            {dFc===d.st && (<div style={{marginTop:10,paddingTop:10,borderTop:"1px solid #e2e8f0"}}><div style={{fontSize:10,color:"#64748b"}}>Top languages: {d.langs.map(function(x){return x.l}).join(", ")}</div>{d.ref && (<div style={{fontSize:10,color:"#d97706",marginTop:4}}>{d.ref ? (d.ref.yr + " refugees/yr from " + (d.ref.from||[]).join(", ")) : ""}</div>)}</div>)}
-          </P>)})}
+            {isOpen && (<div className="fade-in" style={{marginTop:14,paddingTop:14,borderTop:"1px solid #e2e8f0"}}>
+              <div style={{marginBottom:12}}><div style={{fontSize:9,fontWeight:700,color:"#7c3aed",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Top Languages</div>
+                <div style={{display:"grid",gap:4}}>{d.langs.map(function(lg){var barW=lg.a;var tColor=lg.t==="rapid"?"#059669":lg.t==="stable"?"#0891b2":"#d97706";return (<div key={lg.l} style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:80,fontSize:10,fontWeight:600,flexShrink:0}}>{lg.l}</div><div style={{flex:1,height:18,background:"#f1f5f9",borderRadius:4,overflow:"hidden",position:"relative"}}><div style={{width:barW+"%",height:"100%",background:"linear-gradient(90deg,#0891b2,#7c3aed)",borderRadius:4,transition:"width 0.5s"}}></div><span style={{position:"absolute",right:6,top:2,fontSize:9,fontWeight:700}}>{lg.a}%</span></div><div style={{fontSize:9,color:tColor,fontWeight:600,width:60,flexShrink:0}}>{lg.t}</div></div>)})}</div>
+              </div>
+              {d.ref && (<div style={{padding:10,background:"#fffbeb",borderRadius:8,border:"1px solid #fde68a"}}><div style={{fontSize:9,fontWeight:700,color:"#92400e",marginBottom:2}}>Refugee Intake</div><div style={{fontSize:11,color:"#78350f"}}>{d.ref.yr.toLocaleString()} refugees/yr from {(d.ref.from||[]).join(", ")}</div></div>)}
+            </div>)}
+          </div>)})}
         </div>
+      </div>)}
+
+
+      {tab==="cchi" && (<div>
+        <div style={{marginBottom:16}}><h1 style={{fontFamily:"Outfit",fontSize:26,fontWeight:800,color:"#0f172a",marginBottom:4}}>CCHI Interpreter Registry</h1><p style={{color:"#64748b",fontSize:11}}>Search the national CCHI certified healthcare interpreter registry. Credentials: CoreCHI, CoreCHI-P, CHI (Spanish/Arabic/Mandarin).</p></div>
+
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+          <P style={{background:"linear-gradient(135deg,#eff6ff,#f0fdf4)"}}>
+            <SL color="#0891b2">AI-Powered Search</SL>
+            <div style={{fontSize:10,color:"#64748b",marginBottom:8}}>Uses Claude + web search to find CCHI-certified interpreters by state, language, or name from the public registry.</div>
+            <div style={{display:"flex",gap:8,marginBottom:8}}><input ref={cchiQRef} defaultValue={cchiQ} onKeyDown={function(e){if(e.key==="Enter"){setCchiQ(e.target.value);runCchiAgent(e.target.value)}}} placeholder="e.g. Spanish interpreters in Illinois (Enter)" style={{flex:1,padding:"10px 14px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:12,fontFamily:"monospace",outline:"none"}}/><button onClick={function(){var v=cchiQRef.current?cchiQRef.current.value:cchiQ;setCchiQ(v);runCchiAgent(v)}} disabled={cchiLoading} style={Object.assign({},abtn,{background:cchiLoading?"#cbd5e1":"#0891b2",color:"#fff"})}>{cchiLoading?"Searching...":"Search"}</button></div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+              {["CCHI interpreters Illinois","CCHI interpreters North Carolina","CCHI Spanish certified Wisconsin","CCHI Arabic interpreters Georgia","CoreCHI-P South Carolina","CCHI Mandarin interpreters Alabama"].map(function(s){return chip(s,function(v){setCchiQ(v);if(cchiQRef.current)cchiQRef.current.value=v;runCchiAgent(v)})})}
+            </div>
+          </P>
+          <P style={{background:"#0f172a",color:"#fff"}}>
+            <div style={{fontSize:11,fontWeight:700,color:"#0891b2",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>Direct Registry Access</div>
+            <div style={{fontSize:10,color:"#94a3b8",marginBottom:12}}>Search the official CCHI National Healthcare Interpreter Registry directly. Filter by name, state (use abbreviations: IL, WI, NC, SC, GA, AL), or language.</div>
+            <a href="https://cchi.learningbuilder.com/Search/Public/MemberRole/Registry" target="_blank" rel="noopener noreferrer" style={{display:"block",textAlign:"center",padding:"12px 20px",borderRadius:8,background:"#0891b2",color:"#fff",textDecoration:"none",fontSize:12,fontWeight:700,fontFamily:"monospace",marginBottom:8}}>Open CCHI Registry</a>
+            <a href="https://cchi.learningbuilder.com/Public/MemberSearch/Search" target="_blank" rel="noopener noreferrer" style={{display:"block",textAlign:"center",padding:"12px 20px",borderRadius:8,background:"transparent",color:"#0891b2",textDecoration:"none",fontSize:12,fontWeight:700,fontFamily:"monospace",border:"1px solid #0891b2"}}>CCHI Member Search</a>
+            <div style={{marginTop:10,display:"flex",flexWrap:"wrap",gap:4}}>
+              {["IL","WI","NC","SC","GA","AL"].map(function(st){return (<a key={st} href={"https://cchi.learningbuilder.com/Search/Public/MemberRole/Registry"} target="_blank" rel="noopener noreferrer" style={{padding:"4px 10px",borderRadius:6,background:"#1e293b",color:"#0891b2",textDecoration:"none",fontSize:10,fontWeight:600,border:"1px solid #334155"}}>{st}</a>)})}
+            </div>
+          </P>
+        </div>
+
+        {cchiLoading && (<P style={{textAlign:"center",padding:30}}><div style={{fontSize:13,fontWeight:700,color:"#0891b2"}}>Searching CCHI Registry...</div><div style={{fontSize:10,color:"#94a3b8",marginTop:4}}>Querying certified interpreter database via web search</div></P>)}
+
+        {cchiR && (<div>
+          {cchiR.totalFound > 0 && (<div style={{fontSize:11,color:"#059669",fontWeight:600,marginBottom:8}}>{cchiR.totalFound} interpreter(s) found</div>)}
+          {cchiR.interpreters && cchiR.interpreters.length > 0 && (<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8,marginBottom:12}}>
+            {cchiR.interpreters.map(function(interp,i){var sv=cchiSaved.some(function(x){return x.name===interp.name&&x.credential===interp.credential});return (<P key={i} style={{borderLeft:"3px solid #0891b2"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                <div><div style={{fontSize:13,fontWeight:800,fontFamily:"Outfit"}}>{interp.name}</div>
+                  <div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>
+                    {interp.credential && (<Tag c="#0891b2">{interp.credential}</Tag>)}
+                    {interp.language && (<Tag c="#7c3aed">{interp.language}</Tag>)}
+                    {interp.state && (<Tag c="#059669">{interp.state}</Tag>)}
+                    {interp.status && (<Tag c={interp.status==="Active"?"#059669":"#d97706"}>{interp.status}</Tag>)}
+                  </div>
+                </div>
+                <button onClick={function(e){e.stopPropagation();if(!sv)saveCchi(interp)}} style={Object.assign({},abtn,{padding:"4px 10px",background:sv?"#f0fdf4":"#059669",color:sv?"#059669":"#fff",fontSize:9})}>{sv?"Saved":"+ Save"}</button>
+              </div>
+              {interp.email && (<div style={{fontSize:10,color:"#0891b2",marginTop:6}}>{interp.email}</div>)}
+            </P>)})}
+          </div>)}
+          {cchiR.registryNote && (<P style={{background:"#f0f9ff",borderColor:"#0891b220"}}><div style={{fontSize:10,color:"#0891b2"}}>{cchiR.registryNote}</div></P>)}
+          {cchiR.searchTip && (<div style={{fontSize:10,color:"#64748b",fontStyle:"italic",marginTop:6}}>{cchiR.searchTip}</div>)}
+        </div>)}
+
+        {cchiSaved.length > 0 && (<P style={{marginTop:12}}><SL color="#0891b2">Saved CCHI Interpreters ({cchiSaved.length})</SL>
+          {cchiSaved.map(function(interp,i){return (<div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid #f1f5f9"}}>
+            <div><span style={{fontSize:11,fontWeight:700}}>{interp.name}</span> <Tag c="#0891b2">{interp.credential}</Tag> <Tag c="#7c3aed">{interp.language}</Tag> <Tag c="#059669">{interp.state}</Tag></div>
+            <button onClick={function(){var nc=cchiSaved.filter(function(_,j){return j!==i});setCchiSaved(nc);persist("ll_cchi",nc)}} style={{fontSize:9,color:"#dc2626",background:"none",border:"none",cursor:"pointer"}}>Remove</button>
+          </div>)})}
+        </P>)}
+
+        <P style={{marginTop:12,background:"#fffbeb",borderColor:"#fde68a"}}><div style={{fontSize:10,color:"#92400e"}}><span style={{fontWeight:700}}>About CCHI Credentials:</span> CoreCHI = knowledge-based (all languages). CoreCHI-P = performance-based (all languages). CHI = full oral performance certification (Spanish, Arabic, Mandarin). NCCA-accredited, the only accredited interpreter certifications in the U.S.</div></P>
       </div>)}
 
       {tab==="agents" && (<div>
